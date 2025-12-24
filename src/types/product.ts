@@ -1,0 +1,335 @@
+// ================= STORE & DISCOUNT TYPES =================
+export type StoreName = "Amazon" | "Flipkart" | "Myntra";
+
+export type DiscountPercent = number; // allow any discount %
+
+
+// ================= CATEGORY TYPE =================
+export type Category =
+  | "Headphones"
+  | "Dresses"
+  | "Electronics"
+  | "Fashion"
+  | "Mobiles"
+  | "Watches"
+  | "Footwear"
+  | "Home & Kitchen"
+  | "Beauty"
+  | "Other";
+
+// ================= CATEGORY → PRODUCTS =================
+export const categoriesWithProducts: Record<Category, string[]> = {
+  Headphones: [
+    "Wireless Earbuds",
+    "Bluetooth Headphones",
+    "Neckband",
+    "Wired Earphones",
+    "Gaming Headset",
+    "Noise Cancelling Headphones",
+    "Studio Headphones",
+    "Over Ear Headphones",
+    "On Ear Headphones",
+    "Kids Headphones",
+    "Headphone Stand",
+    "Headphone Case",
+    "Aux Cable",
+    "USB Headset",
+  ],
+
+  Dresses: [
+    "Women Dress",
+    "Girls Dress",
+    "Kids Dress",
+    "Baby Dress",
+    "Party Wear Dress",
+    "Casual Dress",
+    "Office Wear Dress",
+    "Ethnic Dress",
+    "Western Dress",
+    "Gown",
+    "Frock",
+    "Maxi Dress",
+    "Mini Dress",
+    "Midi Dress",
+    "Wrap Dress",
+    "Bodycon Dress",
+    "A-Line Dress",
+    "Floral Dress",
+    "Printed Dress",
+  ],
+
+  Electronics: [
+    "Laptop",
+    "Ultrabook",
+    "Gaming Laptop",
+    "Refurbished Laptop",
+    "Tablet",
+    "iPad",
+    "Smart TV",
+    "Android TV",
+    "4K TV",
+    "LED TV",
+    "Bluetooth Speaker",
+    "Portable Speaker",
+    "Soundbar",
+    "Home Theatre",
+    "Camera",
+    "Mirrorless Camera",
+    "DSLR Camera",
+    "Action Camera",
+    "Tripod",
+    "Printer",
+    "Scanner",
+    "Monitor",
+    "CPU",
+    "Keyboard",
+    "Mechanical Keyboard",
+    "Mouse",
+    "Gaming Mouse",
+    "Webcam",
+    "Microphone",
+    "Router",
+    "WiFi Extender",
+    "Power Bank",
+    "Fast Charger",
+    "Wireless Charger",
+    "Extension Board",
+    "UPS",
+    "Inverter",
+    "Smart Bulb",
+    "Smart Plug",
+    "Smart Doorbell",
+  ],
+
+  Fashion: [
+    // MEN
+    "Men T-Shirt",
+    "Men Polo T-Shirt",
+    "Men Shirt",
+    "Men Casual Shirt",
+    "Men Formal Shirt",
+    "Men Jeans",
+    "Men Pant",
+    "Men Chinos",
+    "Men Shorts",
+    "Men Track Pant",
+    "Men Kurta",
+    "Men Sherwani",
+    "Men Blazer",
+    "Men Suit",
+    "Men Raincoat",
+
+    // WOMEN
+    "Women Top",
+    "Women T-Shirt",
+    "Women Shirt",
+    "Women Jeans",
+    "Women Pant",
+    "Women Palazzo",
+    "Women Skirt",
+    "Women Kurti",
+    "Women Saree",
+    "Cotton Saree",
+    "Silk Saree",
+    "Women Lehenga",
+    "Women Anarkali",
+    "Women Dupatta",
+    "Women Shrug",
+
+    // INNERWEAR
+    "Bra",
+    "Padded Bra",
+    "Non Padded Bra",
+    "Sports Bra",
+    "Panty",
+    "Hipster Panty",
+    "Brief",
+    "Boxers",
+    "Trunks",
+    "Vest",
+    "Innerwear Combo",
+    "Thermal Wear",
+    "Night Suit",
+    "Nighty",
+
+    // KIDS
+    "Kids T-Shirt",
+    "Kids Shirt",
+    "Kids Jeans",
+    "Kids Shorts",
+    "Kids Skirt",
+    "Kids Frock",
+    "Kids Ethnic Wear",
+    "Kids Nightwear",
+    "Kids Innerwear",
+    "School Uniform",
+
+    // SEASONAL
+    "Winter Jacket",
+    "Sweater",
+    "Hoodie",
+    "Sweatshirt",
+    "Rain Jacket",
+
+    // ACCESSORIES
+    "Belt",
+    "Wallet",
+    "Purse",
+    "Handbag",
+    "Backpack",
+    "Laptop Bag",
+    "Sling Bag",
+    "Clutch",
+    "Cap",
+    "Beanie",
+    "Scarf",
+    "Sunglasses",
+    "Eyewear Frame",
+    "Socks",
+    "Gloves",
+  ],
+
+  Mobiles: [
+    "Android Mobile",
+    "iPhone",
+    "5G Mobile",
+    "Foldable Mobile",
+    "Budget Mobile",
+    "Gaming Mobile",
+    "Refurbished Mobile",
+    "Mobile Cover",
+    "Designer Mobile Case",
+    "Shockproof Case",
+    "Screen Guard",
+    "Tempered Glass",
+    "Mobile Charger",
+    "Fast Charger",
+    "Wireless Charger",
+    "Charging Cable",
+    "Type C Cable",
+    "Lightning Cable",
+    "OTG Cable",
+    "Power Adapter",
+    "Mobile Stand",
+    "Car Mobile Holder",
+  ],
+
+  Watches: [
+    "Smart Watch",
+    "Fitness Band",
+    "AMOLED Smartwatch",
+    "Analog Watch",
+    "Digital Watch",
+    "Chronograph Watch",
+    "Luxury Watch",
+    "Men Watch",
+    "Women Watch",
+    "Kids Watch",
+    "Couple Watch",
+    "Watch Strap",
+  ],
+
+  Footwear: [
+    "Men Shoes",
+    "Women Shoes",
+    "Kids Shoes",
+    "School Shoes",
+    "Sports Shoes",
+    "Running Shoes",
+    "Walking Shoes",
+    "Casual Shoes",
+    "Formal Shoes",
+    "Sneakers",
+    "Loafers",
+    "Sandals",
+    "Slippers",
+    "Flip Flops",
+    "Slides",
+    "Heels",
+    "Wedges",
+    "Boots",
+    "Rain Shoes",
+    "Socks",
+  ],
+
+  "Home & Kitchen": [
+    "Mixer Grinder",
+    "Juicer",
+    "Blender",
+    "Gas Stove",
+    "Induction Cooktop",
+    "Microwave Oven",
+    "OTG Oven",
+    "Pressure Cooker",
+    "Electric Cooker",
+    "Cookware Set",
+    "Non Stick Pan",
+    "Tawa",
+    "Kadai",
+    "Dinner Set",
+    "Serving Bowls",
+    "Kitchen Storage Containers",
+    "Spice Box",
+    "Water Bottle",
+    "Thermos Flask",
+    "Lunch Box",
+    "Chopping Board",
+    "Bedsheet",
+    "Mattress",
+    "Pillow",
+    "Blanket",
+    "Curtains",
+    "Wall Clock",
+    "Home Decor",
+    "Study Table",
+    "Office Chair",
+  ],
+
+  Beauty: [
+    "Face Wash",
+    "Face Cream",
+    "Day Cream",
+    "Night Cream",
+    "Moisturizer",
+    "Sunscreen",
+    "Serum",
+    "Face Mask",
+    "Lipstick",
+    "Foundation",
+    "BB Cream",
+    "Makeup Kit",
+    "Hair Oil",
+    "Shampoo",
+    "Conditioner",
+    "Hair Dryer",
+    "Perfume",
+    "Beard Trimmer",
+  ],
+
+  Other: [
+    "Baby Products",
+    "Diapers",
+    "Kids Toys",
+    "Books",
+    "Stationery",
+    "Gym Equipment",
+    "Yoga Mat",
+    "Car Accessories",
+    "Pet Food",
+    "Tool Kit",
+  ],
+};
+
+// ================= PRODUCT INTERFACE =================
+export interface Product {
+  id: string;
+  name: string;
+  imageUrl: string;
+  originalPrice: number;
+  discountedPrice: number;
+  discountPercent: DiscountPercent;
+  category: Category;
+  storeName: StoreName;
+  affiliateLink: string;
+  createdAt: number;
+}

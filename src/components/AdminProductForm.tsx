@@ -102,15 +102,8 @@ const categoriesWithProducts: Record<Category, string[]> = {
     "Lipstick",
     "Perfume",
   ],
-  Other: [
-    "Kids Toys",
-    "Books",
-    "Gym Equipment",
-    "Car Accessories",
-  ],
+  Other: ["Kids Toys", "Books", "Gym Equipment", "Car Accessories"],
 };
-
-const discountOptions: DiscountPercent[] = [0, 50, 80];
 
 /* ================= COMPONENT ================= */
 const AdminProductForm = ({
@@ -145,15 +138,27 @@ const AdminProductForm = ({
     }
   }, [editingProduct]);
 
-  /* ===== AUTO DISCOUNT CALC ===== */
+  /* ===== AUTO CALCULATE DISCOUNT % ===== */
   useEffect(() => {
-    if (originalPrice && discountPercent > 0) {
-      const discounted = Math.round(
-        Number(originalPrice) * (1 - discountPercent / 100)
-      );
-      setDiscountedPrice(discounted.toString());
+    if (!originalPrice || !discountedPrice) {
+      setDiscountPercent(0);
+      return;
     }
-  }, [originalPrice, discountPercent]);
+
+    const original = Number(originalPrice);
+    const discounted = Number(discountedPrice);
+
+    if (discounted <= 0 || discounted >= original) {
+      setDiscountPercent(0);
+      return;
+    }
+
+    const percent = Math.round(
+      ((original - discounted) / original) * 100
+    );
+
+    setDiscountPercent(percent as DiscountPercent);
+  }, [originalPrice, discountedPrice]);
 
   const resetForm = () => {
     setName("");
@@ -196,13 +201,11 @@ const AdminProductForm = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="grid gap-4 sm:grid-cols-2">
-        {/* Product Name */}
         <div className="space-y-2 sm:col-span-2">
           <Label>Product Name *</Label>
           <Input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
-        {/* Product Type */}
         <div className="space-y-2">
           <Label>Product Type</Label>
           <Select value={productType} onValueChange={setProductType}>
@@ -219,7 +222,6 @@ const AdminProductForm = ({
           </Select>
         </div>
 
-        {/* Category */}
         <div className="space-y-2">
           <Label>Category *</Label>
           <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
@@ -236,19 +238,18 @@ const AdminProductForm = ({
           </Select>
         </div>
 
-        {/* Image */}
         <div className="space-y-2 sm:col-span-2">
           <Label>Image URL *</Label>
           <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
         </div>
 
-        {/* Prices */}
         <Input
           placeholder="Original Price"
           type="number"
           value={originalPrice}
           onChange={(e) => setOriginalPrice(e.target.value)}
         />
+
         <Input
           placeholder="Discounted Price"
           type="number"
@@ -256,24 +257,11 @@ const AdminProductForm = ({
           onChange={(e) => setDiscountedPrice(e.target.value)}
         />
 
-        {/* Discount */}
-        <Select
-          value={discountPercent.toString()}
-          onValueChange={(v) => setDiscountPercent(Number(v) as DiscountPercent)}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {discountOptions.map((d) => (
-              <SelectItem key={d} value={d.toString()}>
-                {d === 0 ? "No Discount" : `${d}% OFF`}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {/* Discount % Display */}
+        <div className="flex items-center text-sm font-semibold">
+          Discount: {discountPercent}% OFF
+        </div>
 
-        {/* Store */}
         <Select value={storeName} onValueChange={(v) => setStoreName(v as StoreName)}>
           <SelectTrigger>
             <SelectValue />
@@ -285,7 +273,6 @@ const AdminProductForm = ({
           </SelectContent>
         </Select>
 
-        {/* Affiliate */}
         <div className="sm:col-span-2">
           <Input
             placeholder="Affiliate Link"
@@ -295,7 +282,6 @@ const AdminProductForm = ({
         </div>
       </div>
 
-      {/* Buttons */}
       <div className="flex gap-3">
         <Button type="submit" className="flex-1 gap-2">
           {editingProduct ? <Save size={16} /> : <Plus size={16} />}

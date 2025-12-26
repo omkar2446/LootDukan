@@ -22,9 +22,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="flex items-center gap-1 text-xs text-muted-foreground">
-            Made with <Heart className="h-3 w-3 text-primary fill-primary" /> in India
-            <span className="mx-2">•</span>
-            © {new Date().getFullYear()} Lootdukan. All rights reserved.    
+            Made with <Heart className="h-3 w-3 text-primary fill-primary" /> in India<span className="mx-2">•</span>© {new Date().getFullYear()} Lootdukan. All rights reserved.    
           </p>
         </div>
       </div>

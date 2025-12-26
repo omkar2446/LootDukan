@@ -147,8 +147,45 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
   return (
     <>
       <Helmet>
-        <title>LootDukan</title>
-      </Helmet>
+  {/* Basic SEO */}
+  <title>LootDukan – Best Deals, Discounts & Online Shopping</title>
+  <meta
+    name="description"
+    content="LootDukan brings you the best online deals, discounts, and offers on mobiles, fashion, electronics, beauty, and more. Save big with 50%–80% OFF!"
+  />
+  <meta
+    name="keywords"
+    content="LootDukan, online shopping, best deals, discounts, mobiles, electronics, fashion, beauty products, cheap shopping, India deals"
+  />
+  <meta name="author" content="LootDukan" />
+  <meta name="robots" content="index, follow" />
+
+  {/* Open Graph (Facebook, WhatsApp) */}
+  <meta property="og:title" content="LootDukan – Best Deals & Discounts Online" />
+  <meta
+    property="og:description"
+    content="Shop smart with LootDukan. Discover hot deals, 80% OFF offers, and trending products from top stores."
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lootdukan.in" />
+  <meta property="og:image" content="/og-image.png" />
+
+  {/* Twitter SEO */}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="LootDukan – Best Deals Online" />
+  <meta
+    name="twitter:description"
+    content="Find trending products and massive discounts on LootDukan."
+  />
+  <meta name="twitter:image" content="/og-image.png" />
+
+  {/* Mobile Optimization */}
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  {/* Canonical URL */}
+  <link rel="canonical" href="https://lootdukan.in" />
+</Helmet>
+
 
       <div className="flex min-h-screen flex-col">
         <Header

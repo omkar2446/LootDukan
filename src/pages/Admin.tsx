@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+
 import { Product } from "@/types/product";
 import {
   getProducts,
@@ -29,19 +30,16 @@ const Admin = ({ isDark, onToggleTheme }: AdminProps) => {
   const { toast } = useToast();
   const session = getSession();
 
-  // 🔥 MUST START AS ARRAY
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔄 LOAD PRODUCTS FROM SUPABASE
+  // 🔄 Load Products
   const loadProducts = async () => {
     try {
       const data = await getProducts();
       setProducts(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Failed to load products", error);
-      setProducts([]);
       toast({
         title: "Error",
         description: "Failed to load products",
@@ -56,7 +54,7 @@ const Admin = ({ isDark, onToggleTheme }: AdminProps) => {
     loadProducts();
   }, []);
 
-  // 🔐 LOGOUT
+  // 🔐 Logout
   const handleLogout = () => {
     logout();
     navigate("/admin-login", { replace: true });
@@ -66,29 +64,22 @@ const Admin = ({ isDark, onToggleTheme }: AdminProps) => {
     });
   };
 
-  // ➕ ADD / ✏️ UPDATE PRODUCT
+  // ➕ Add / ✏ Update
   const handleSubmit = async (
     productData: Omit<Product, "id" | "createdAt">
   ) => {
     try {
       if (editingProduct) {
         await updateProduct(editingProduct.id, productData);
-        toast({
-          title: "Product updated",
-          description: "The product has been updated successfully.",
-        });
+        toast({ title: "Product updated successfully" });
         setEditingProduct(null);
       } else {
         await addProduct(productData);
-        toast({
-          title: "Product added",
-          description: "The product has been added successfully.",
-        });
+        toast({ title: "Product added successfully" });
       }
 
-      await loadProducts();
-    } catch (error) {
-      console.error(error);
+      loadProducts();
+    } catch {
       toast({
         title: "Error",
         description: "Failed to save product",
@@ -97,29 +88,20 @@ const Admin = ({ isDark, onToggleTheme }: AdminProps) => {
     }
   };
 
-  // ✏️ EDIT
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // 🗑 DELETE
   const handleDelete = async (id: string) => {
     try {
       await deleteProduct(id);
       toast({
-        title: "Product deleted",
-        description: "The product has been removed.",
-        variant: "destructive",
+        title: "Deleted",
+        description: "Product removed",
       });
-
-      if (editingProduct?.id === id) {
-        setEditingProduct(null);
-      }
-
-      await loadProducts();
-    } catch (error) {
-      console.error(error);
+      loadProducts();
+    } catch {
       toast({
         title: "Error",
         description: "Failed to delete product",
@@ -128,15 +110,22 @@ const Admin = ({ isDark, onToggleTheme }: AdminProps) => {
     }
   };
 
-  const handleCancelEdit = () => {
-    setEditingProduct(null);
-  };
-
   return (
     <>
+      {/* ✅ SEO (ADMIN SAFE) */}
       <Helmet>
-        <title>Admin Panel - LootDukan</title>
+        <title>Admin Panel – LootDukan</title>
+        <meta name="description" content="Admin panel for managing LootDukan products." />
+
+        {/* ❌ DO NOT INDEX ADMIN */}
         <meta name="robots" content="noindex, nofollow" />
+        <meta name="googlebot" content="noindex, nofollow" />
+
+        {/* Block Social Preview */}
+        <meta property="og:title" content="Admin Panel" />
+        <meta property="og:description" content="Restricted area" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="none" />
       </Helmet>
 
       <div className="flex min-h-screen flex-col">
@@ -156,29 +145,21 @@ const Admin = ({ isDark, onToggleTheme }: AdminProps) => {
                   <Package className="h-6 w-6 text-primary-foreground" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground">
-                    Admin Panel
-                  </h1>
+                  <h1 className="text-2xl font-bold">Admin Panel</h1>
                   <p className="text-sm text-muted-foreground">
-                    Manage your affiliate products
+                    Manage affiliate products
                   </p>
                 </div>
               </div>
 
-              {/* USER + LOGOUT */}
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium text-foreground">
+                  <User className="h-4 w-4" />
+                  <span className="text-sm font-medium">
                     {session?.name || "Admin"}
                   </span>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="gap-2"
-                >
+                <Button variant="outline" size="sm" onClick={handleLogout}>
                   <LogOut className="h-4 w-4" />
                   Logout
                 </Button>
@@ -187,30 +168,26 @@ const Admin = ({ isDark, onToggleTheme }: AdminProps) => {
 
             <div className="grid gap-8 lg:grid-cols-2">
               {/* FORM */}
-              <section className="rounded-xl border bg-card p-6 shadow-soft">
+              <section className="rounded-xl border bg-card p-6 shadow">
                 <h2 className="mb-5 text-lg font-semibold">
                   {editingProduct ? "Edit Product" : "Add New Product"}
                 </h2>
                 <AdminProductForm
                   editingProduct={editingProduct}
                   onSubmit={handleSubmit}
-                  onCancel={handleCancelEdit}
+                  onCancel={() => setEditingProduct(null)}
                 />
               </section>
 
-              {/* PRODUCT LIST */}
+              {/* LIST */}
               <section>
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold">
-                    Products ({products.length})
-                  </h2>
-                </div>
+                <h2 className="mb-4 text-lg font-semibold">
+                  Products ({products.length})
+                </h2>
 
                 <div className="max-h-[600px] overflow-y-auto pr-2">
                   {loading ? (
-                    <div className="text-center text-muted-foreground">
-                      Loading products...
-                    </div>
+                    <p className="text-muted-foreground">Loading...</p>
                   ) : (
                     <AdminProductList
                       products={products}

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Product } from "@/types/product";
 import ProductCard from "./ProductCard";
 import { LucideIcon } from "lucide-react";
@@ -21,6 +22,19 @@ const ProductSection = ({
 }: ProductSectionProps) => {
   if (products.length === 0) return null;
 
+  // ✅ Local fallback state (only used if parent doesn't control)
+  const [localExpanded, setLocalExpanded] = useState(false);
+
+  const isExpanded = onTitleClick ? expanded : localExpanded;
+
+  const handleClick = () => {
+    if (onTitleClick) {
+      onTitleClick();
+    } else {
+      setLocalExpanded(prev => !prev);
+    }
+  };
+
   const getBgClass = () => {
     if (variant === "hot")
       return "bg-gradient-to-r from-destructive/5 via-background to-destructive/5";
@@ -40,13 +54,13 @@ const ProductSection = ({
       <div className="container">
         {/* HEADER */}
         <div
-          className={`mb-6 flex items-center gap-3 ${
-            onTitleClick ? "cursor-pointer group" : ""
-          }`}
-          onClick={onTitleClick}
+          className="mb-6 flex items-center gap-3 cursor-pointer group"
+          onClick={handleClick}
         >
           {Icon && (
-            <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${getIconBgClass()}`}>
+            <div
+              className={`flex h-10 w-10 items-center justify-center rounded-xl ${getIconBgClass()}`}
+            >
               <Icon className="h-5 w-5" />
             </div>
           )}
@@ -59,18 +73,22 @@ const ProductSection = ({
             {products.length} items
           </span>
 
-          {onTitleClick && (
-            <span className="ml-auto text-sm text-primary group-hover:underline">
-              {expanded ? "Show less ↑" : "View all →"}
-            </span>
-          )}
+          <span className="ml-auto text-sm text-primary group-hover:underline">
+            {isExpanded ? "Show less ↑" : "View all →"}
+          </span>
         </div>
 
         {/* PRODUCTS */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {(expanded ? products : products.slice(0, 5)).map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
-          ))}
+          {(isExpanded ? products : products.slice(0, 5)).map(
+            (product, index) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                index={index}
+              />
+            )
+          )}
         </div>
       </div>
     </section>

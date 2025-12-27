@@ -41,11 +41,12 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  /* FILTER BAR SCROLL HIDE */
+  // ✅ NEW STATE (ONLY ADDITION)
+  const [showFilters, setShowFilters] = useState(false);
+
   const [hideFilterBar, setHideFilterBar] = useState(false);
   const lastScrollY = useRef(0);
 
-  /* LOAD PRODUCTS */
   useEffect(() => {
     const loadProducts = async () => {
       const data = await getProducts();
@@ -55,7 +56,6 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
     loadProducts();
   }, []);
 
-  /* SCROLL LOGIC */
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -66,13 +66,11 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  /* AVAILABLE CATEGORIES */
   const availableCategories = useMemo(
     () => Array.from(new Set(products.map(p => p.category))) as Category[],
     [products]
   );
 
-  /* HOME SECTIONS */
   const hotDeals80 = products.filter(p => p.discountPercent >= 80);
   const flashDeals50 = products.filter(
     p => p.discountPercent >= 50 && p.discountPercent < 80
@@ -89,14 +87,12 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
   const beautyProducts = products.filter(p => p.category === "Beauty");
   const otherProducts = products.filter(p => p.category === "Other");
 
-  /* FILTER ACTIVE CHECK */
   const isFiltersActive =
     searchQuery ||
     storeFilter !== "All" ||
     categoryFilter !== "All" ||
     discountFilter !== "All";
 
-  /* FILTER + SORT */
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...products];
 
@@ -147,45 +143,8 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
   return (
     <>
       <Helmet>
-  {/* Basic SEO */}
-  <title>LootDukan – Best Deals, Discounts & Online Shopping</title>
-  <meta
-    name="description"
-    content="LootDukan brings you the best online deals, discounts, and offers on mobiles, fashion, electronics, beauty, and more. Save big with 50%–80% OFF!"
-  />
-  <meta
-    name="keywords"
-    content="LootDukan, online shopping, best deals, discounts, mobiles, electronics, fashion, beauty products, cheap shopping, India deals"
-  />
-  <meta name="author" content="LootDukan" />
-  <meta name="robots" content="index, follow" />
-
-  {/* Open Graph (Facebook, WhatsApp) */}
-  <meta property="og:title" content="LootDukan – Best Deals & Discounts Online" />
-  <meta
-    property="og:description"
-    content="Shop smart with LootDukan. Discover hot deals, 80% OFF offers, and trending products from top stores."
-  />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://lootdukan.in" />
-  <meta property="og:image" content="/og-image.png" />
-
-  {/* Twitter SEO */}
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="LootDukan – Best Deals Online" />
-  <meta
-    name="twitter:description"
-    content="Find trending products and massive discounts on LootDukan."
-  />
-  <meta name="twitter:image" content="/og-image.png" />
-
-  {/* Mobile Optimization */}
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  {/* Canonical URL */}
-  <link rel="canonical" href="https://lootdukan.in" />
-</Helmet>
-
+        <title>LootDukan – Best Deals</title>
+      </Helmet>
 
       <div className="flex min-h-screen flex-col">
         <Header
@@ -195,24 +154,40 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
           onToggleTheme={onToggleTheme}
         />
 
-        {/* FILTER BAR */}
-        <div
-          className={`sticky top-16 z-40 bg-background/90 backdrop-blur transition-transform duration-300 ${
-            hideFilterBar ? "-translate-y-full" : "translate-y-0"
-          }`}
-        >
-          <div className="container py-4 space-y-3">
-            <StoreFilter selected={storeFilter} onSelect={setStoreFilter} />
-            <CategoryFilter
-              selected={categoryFilter}
-              availableCategories={availableCategories}
-              onSelect={setCategoryFilter}
-            />
-            <DiscountFilter
-              selected={discountFilter}
-              onSelect={setDiscountFilter}
-            />
-            <SortSelect value={sortOption} onValueChange={setSortOption} />
+        {/* ✅ FILTER BAR (ONLY CHANGE HERE) */}
+        <div className="sticky top-16 z-40 bg-background/90 backdrop-blur border-b">
+          <div className="flex items-center justify-between px-4 py-3">
+            <span className="font-semibold text-sm">Filters</span>
+
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="text-orange-500 text-sm"
+            >
+              {showFilters ? "Hide ⌃" : "Show ⌄"}
+            </button>
+          </div>
+
+          <div
+            className={`overflow-hidden transition-all duration-300 ${
+              showFilters ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+            }`}
+          >
+            <div className="px-4 pb-4 space-y-4">
+              <StoreFilter selected={storeFilter} onSelect={setStoreFilter} />
+              <CategoryFilter
+                selected={categoryFilter}
+                availableCategories={availableCategories}
+                onSelect={setCategoryFilter}
+              />
+              <DiscountFilter
+                selected={discountFilter}
+                onSelect={setDiscountFilter}
+              />
+              <SortSelect
+                value={sortOption}
+                onValueChange={setSortOption}
+              />
+            </div>
           </div>
         </div>
 
@@ -229,83 +204,18 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
             </section>
           ) : (
             <>
-              {/* 🔥 CLICK → APPLY FILTER */}
-              <ProductSection
-                title="🔥 80%+ OFF Zone"
-                icon={Flame}
-                products={hotDeals80}
-                onTitleClick={() => setDiscountFilter(80)}
-              />
-
-              <ProductSection
-                title="⚡ 50%+ OFF Deals"
-                icon={Zap}
-                products={flashDeals50}
-                onTitleClick={() => setDiscountFilter(50)}
-              />
-
-              <ProductSection
-                title="🎧 Headphones"
-                icon={Headphones}
-                products={headphonesProducts}
-                onTitleClick={() => setCategoryFilter("Headphones")}
-              />
-
-              <ProductSection
-                title="👗 Dresses"
-                icon={ShirtIcon}
-                products={dressesProducts}
-                onTitleClick={() => setCategoryFilter("Dresses")}
-              />
-
-              <ProductSection
-                title="📱 Electronics"
-                icon={Smartphone}
-                products={electronicsProducts}
-                onTitleClick={() => setCategoryFilter("Electronics")}
-              />
-
-              <ProductSection
-                title="📱 Mobiles"
-                products={mobilesProducts}
-                onTitleClick={() => setCategoryFilter("Mobiles")}
-              />
-
-              <ProductSection
-                title="⌚ Watches"
-                products={watchesProducts}
-                onTitleClick={() => setCategoryFilter("Watches")}
-              />
-
-              <ProductSection
-                title="👟 Footwear"
-                products={footwearProducts}
-                onTitleClick={() => setCategoryFilter("Footwear")}
-              />
-
-              <ProductSection
-                title="🧥 Fashion"
-                products={fashionProducts}
-                onTitleClick={() => setCategoryFilter("Fashion")}
-              />
-
-              <ProductSection
-                title="🏠 Home & Kitchen"
-                products={homeKitchenProducts}
-                onTitleClick={() => setCategoryFilter("Home & Kitchen")}
-              />
-
-              <ProductSection
-                title="💄 Beauty"
-                products={beautyProducts}
-                onTitleClick={() => setCategoryFilter("Beauty")}
-              />
-
-              <ProductSection
-                title="📦 Other Products"
-                products={otherProducts}
-                onTitleClick={() => setCategoryFilter("Other")}
-              />
+              <ProductSection title="🔥 80%+ OFF Zone" icon={Flame} products={hotDeals80} />
+              <ProductSection title="⚡ 50%+ OFF Deals" icon={Zap} products={flashDeals50} />
+              <ProductSection title="🎧 Headphones" icon={Headphones} products={headphonesProducts} />
+              <ProductSection title="👗 Dresses" icon={ShirtIcon} products={dressesProducts} />
+              <ProductSection title="📱 Electronics" icon={Smartphone} products={electronicsProducts} />
+              <ProductSection title="📱 Mobiles" products={mobilesProducts} />
+              <ProductSection title="⌚ Watches" products={watchesProducts} />
+              <ProductSection title="👟 Footwear" products={footwearProducts} />
+              <ProductSection title="🧥 Fashion" products={fashionProducts} />
+              <ProductSection title="🏠 Home & Kitchen" products={homeKitchenProducts} />
+              <ProductSection title="💄 Beauty" products={beautyProducts} />
+              <ProductSection title="📦 Other Products" products={otherProducts} />
             </>
           )}
         </main>

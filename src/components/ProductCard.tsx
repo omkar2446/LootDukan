@@ -17,18 +17,48 @@ const ProductCard = ({ product, index }: ProductCardProps) => {
       maximumFractionDigits: 0,
     }).format(price);
 
+  // ✅ Smart popup handler (Desktop popup / Mobile same tab)
+  const openProduct = (url: string) => {
+    const isMobile = window.innerWidth < 768;
+
+    if (isMobile) {
+      // Mobile → open normally
+      window.location.href = url;
+    } else {
+      // Desktop → popup
+      const width = 900;
+      const height = 600;
+      const left = window.screen.width / 2 - width / 2;
+      const top = window.screen.height / 2 - height / 2;
+
+      window.open(
+        url,
+        "_blank",
+        `width=${width},
+         height=${height},
+         top=${top},
+         left=${left},
+         resizable=no,
+         scrollbars=yes,
+         toolbar=no,
+         menubar=no,
+         location=no`
+      );
+    }
+  };
+
   return (
     <article
       className="group relative flex flex-col overflow-hidden rounded-xl bg-card shadow-card transition-all duration-300 hover:shadow-elevated hover:-translate-y-1"
       style={{ animationDelay: `${index * 50}ms` }}
     >
-      {/* Badges Container */}
+      {/* Badges */}
       <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">
         <StoreBadge store={product.storeName} />
         <DiscountBadge discount={product.discountPercent} />
       </div>
 
-      {/* Product Image */}
+      {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-secondary/50">
         <img
           src={product.imageUrl}
@@ -37,22 +67,19 @@ const ProductCard = ({ product, index }: ProductCardProps) => {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80";
+            target.src =
+              "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80";
           }}
         />
-        
-        {/* Hover Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
 
-      {/* Product Details */}
+      {/* Content */}
       <div className="flex flex-1 flex-col gap-2 p-4">
-        {/* Product Name */}
         <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-medium leading-snug text-foreground">
           {product.name}
         </h3>
 
-        {/* Price Section */}
         <div className="flex flex-col gap-1">
           <p className="text-xl font-bold text-primary">
             {formatPrice(product.discountedPrice)}
@@ -64,18 +91,14 @@ const ProductCard = ({ product, index }: ProductCardProps) => {
           )}
         </div>
 
-        {/* Buy Button */}
-        <a
-          href={product.affiliateLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-auto"
+        {/* ✅ Smart Popup Button */}
+        <Button
+          onClick={() => openProduct(product.affiliateLink)}
+          className="mt-auto w-full gap-2 font-semibold transition-all duration-300 group-hover:shadow-md"
         >
-          <Button className="w-full gap-2 font-semibold transition-all duration-300 group-hover:shadow-md">
-            Buy Now
-            <ExternalLink className="h-4 w-4" />
-          </Button>
-        </a>
+          Buy Now
+          <ExternalLink className="h-4 w-4" />
+        </Button>
       </div>
     </article>
   );

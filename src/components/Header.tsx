@@ -22,7 +22,7 @@ const Header = ({ searchQuery, onSearchChange, isDark, onToggleTheme }: HeaderPr
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 transition-transform hover:scale-105">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <ShoppingBag className="h-5 w-5 text-primary-foreground" />
+           <img src="favicon.ico" alt="" />
           </div>
           <span className="hidden font-bold text-xl sm:inline-block">
             Loot<span className="text-primary">Dukan</span>

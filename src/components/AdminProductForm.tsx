@@ -270,6 +270,7 @@ const AdminProductForm = ({
             <SelectItem value="Amazon">Amazon</SelectItem>
             <SelectItem value="Flipkart">Flipkart</SelectItem>
             <SelectItem value="Myntra">Myntra</SelectItem>
+            <SelectItem value="Meesho">Meesho</SelectItem>
           </SelectContent>
         </Select>
 

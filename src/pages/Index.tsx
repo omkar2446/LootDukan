@@ -41,12 +41,10 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ NEW STATE (ONLY ADDITION)
-  const [showFilters, setShowFilters] = useState(false);
-
   const [hideFilterBar, setHideFilterBar] = useState(false);
   const lastScrollY = useRef(0);
 
+  /* LOAD PRODUCTS */
   useEffect(() => {
     const loadProducts = async () => {
       const data = await getProducts();
@@ -56,11 +54,12 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
     loadProducts();
   }, []);
 
+  /* SCROLL EFFECT */
   useEffect(() => {
     const handleScroll = () => {
-      const currentY = window.scrollY;
-      setHideFilterBar(currentY > lastScrollY.current && currentY > 200);
-      lastScrollY.current = currentY;
+      const y = window.scrollY;
+      setHideFilterBar(y > lastScrollY.current && y > 200);
+      lastScrollY.current = y;
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
@@ -70,7 +69,9 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
     () => Array.from(new Set(products.map(p => p.category))) as Category[],
     [products]
   );
+  
 
+  /* HOME SECTIONS */
   const hotDeals80 = products.filter(p => p.discountPercent >= 80);
   const flashDeals50 = products.filter(
     p => p.discountPercent >= 50 && p.discountPercent < 80
@@ -87,12 +88,14 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
   const beautyProducts = products.filter(p => p.category === "Beauty");
   const otherProducts = products.filter(p => p.category === "Other");
 
+  /* FILTER CHECK */
   const isFiltersActive =
     searchQuery ||
     storeFilter !== "All" ||
     categoryFilter !== "All" ||
     discountFilter !== "All";
 
+  /* FILTER + SORT */
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...products];
 
@@ -143,7 +146,7 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
   return (
     <>
       <Helmet>
-        <title>LootDukan – Best Deals</title>
+        <title>LootDukan</title>
       </Helmet>
 
       <div className="flex min-h-screen flex-col">
@@ -154,40 +157,24 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
           onToggleTheme={onToggleTheme}
         />
 
-        {/* ✅ FILTER BAR (ONLY CHANGE HERE) */}
-        <div className="sticky top-16 z-40 bg-background/90 backdrop-blur border-b">
-          <div className="flex items-center justify-between px-4 py-3">
-            <span className="font-semibold text-sm">Filters</span>
-
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="text-orange-500 text-sm"
-            >
-              {showFilters ? "Hide ⌃" : "Show ⌄"}
-            </button>
-          </div>
-
-          <div
-            className={`overflow-hidden transition-all duration-300 ${
-              showFilters ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-            }`}
-          >
-            <div className="px-4 pb-4 space-y-4">
-              <StoreFilter selected={storeFilter} onSelect={setStoreFilter} />
-              <CategoryFilter
-                selected={categoryFilter}
-                availableCategories={availableCategories}
-                onSelect={setCategoryFilter}
-              />
-              <DiscountFilter
-                selected={discountFilter}
-                onSelect={setDiscountFilter}
-              />
-              <SortSelect
-                value={sortOption}
-                onValueChange={setSortOption}
-              />
-            </div>
+        {/* FILTER BAR */}
+        <div
+          className={`sticky top-16 z-40 bg-background/90 backdrop-blur transition-transform ${
+            hideFilterBar ? "-translate-y-full" : "translate-y-0"
+          }`}
+        >
+          <div className="container py-4 space-y-3">
+            <StoreFilter selected={storeFilter} onSelect={setStoreFilter} />
+            <CategoryFilter
+              selected={categoryFilter}
+              availableCategories={availableCategories}
+              onSelect={setCategoryFilter}
+            />
+            <DiscountFilter
+              selected={discountFilter}
+              onSelect={setDiscountFilter}
+            />
+            <SortSelect value={sortOption} onValueChange={setSortOption} />
           </div>
         </div>
 
@@ -200,22 +187,99 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
             </div>
           ) : isFiltersActive ? (
             <section className="container py-8">
+              {/* SHOW ALL BUTTON */}
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setStoreFilter("All");
+                  setCategoryFilter("All");
+                  setDiscountFilter("All");
+                }}
+                className="mb-6 rounded-md bg-primary px-4 py-2 text-white"
+              >
+                ← Show All Products
+              </button>
+
               <ProductGrid products={filteredAndSortedProducts} />
             </section>
           ) : (
             <>
-              <ProductSection title="🔥 80%+ OFF Zone" icon={Flame} products={hotDeals80} />
-              <ProductSection title="⚡ 50%+ OFF Deals" icon={Zap} products={flashDeals50} />
-              <ProductSection title="🎧 Headphones" icon={Headphones} products={headphonesProducts} />
-              <ProductSection title="👗 Dresses" icon={ShirtIcon} products={dressesProducts} />
-              <ProductSection title="📱 Electronics" icon={Smartphone} products={electronicsProducts} />
-              <ProductSection title="📱 Mobiles" products={mobilesProducts} />
-              <ProductSection title="⌚ Watches" products={watchesProducts} />
-              <ProductSection title="👟 Footwear" products={footwearProducts} />
-              <ProductSection title="🧥 Fashion" products={fashionProducts} />
-              <ProductSection title="🏠 Home & Kitchen" products={homeKitchenProducts} />
-              <ProductSection title="💄 Beauty" products={beautyProducts} />
-              <ProductSection title="📦 Other Products" products={otherProducts} />
+              <ProductSection
+                title="🔥 80%+ OFF Zone"
+                icon={Flame}
+                products={hotDeals80}
+                onTitleClick={() => setDiscountFilter(80)}
+              />
+
+              <ProductSection
+                title="⚡ 50%+ OFF Deals"
+                icon={Zap}
+                products={flashDeals50}
+                onTitleClick={() => setDiscountFilter(50)}
+              />
+
+              <ProductSection
+                title="🎧 Headphones"
+                icon={Headphones}
+                products={headphonesProducts}
+                onTitleClick={() => setCategoryFilter("Headphones")}
+              />
+
+              <ProductSection
+                title="👗 Dresses"
+                icon={ShirtIcon}
+                products={dressesProducts}
+                onTitleClick={() => setCategoryFilter("Dresses")}
+              />
+
+              <ProductSection
+                title="📱 Electronics"
+                icon={Smartphone}
+                products={electronicsProducts}
+                onTitleClick={() => setCategoryFilter("Electronics")}
+              />
+
+              <ProductSection
+                title="📱 Mobiles"
+                products={mobilesProducts}
+                onTitleClick={() => setCategoryFilter("Mobiles")}
+              />
+
+              <ProductSection
+                title="⌚ Watches"
+                products={watchesProducts}
+                onTitleClick={() => setCategoryFilter("Watches")}
+              />
+
+              <ProductSection
+                title="👟 Footwear"
+                products={footwearProducts}
+                onTitleClick={() => setCategoryFilter("Footwear")}
+              />
+
+              <ProductSection
+                title="🧥 Fashion"
+                products={fashionProducts}
+                onTitleClick={() => setCategoryFilter("Fashion")}
+              />
+
+              <ProductSection
+                title="🏠 Home & Kitchen"
+                products={homeKitchenProducts}
+                onTitleClick={() => setCategoryFilter("Home & Kitchen")}
+              />
+
+              <ProductSection
+                title="💄 Beauty"
+                products={beautyProducts}
+                onTitleClick={() => setCategoryFilter("Beauty")}
+              />
+
+              <ProductSection
+                title="📦 Other Products"
+                products={otherProducts}
+                onTitleClick={() => setCategoryFilter("Other")}
+              />
             </>
           )}
         </main>

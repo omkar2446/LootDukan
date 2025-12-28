@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary">
-                <img src="favicon.ico" alt="" />
+                <img src="afavicon.ico" alt="" />
               </div>
               <span className="font-display text-xl font-bold">Lootdukan</span>
             </Link>

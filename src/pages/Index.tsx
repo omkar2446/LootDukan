@@ -69,6 +69,11 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
     () => Array.from(new Set(products.map(p => p.category))) as Category[],
     [products]
   );
+  useEffect(() => {
+  // Force light mode on first load
+  document.documentElement.classList.remove("dark");
+}, []);
+
   
 
   /* HOME SECTIONS */

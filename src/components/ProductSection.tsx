@@ -53,30 +53,40 @@ const ProductSection = ({
     <section className={`py-8 ${getBgClass()}`}>
       <div className="container">
         {/* HEADER */}
-        <div
-          className="mb-6 flex items-center gap-3 cursor-pointer group"
-          onClick={handleClick}
-        >
-          {Icon && (
-            <div
-              className={`flex h-10 w-10 items-center justify-center rounded-xl ${getIconBgClass()}`}
-            >
-              <Icon className="h-5 w-5" />
-            </div>
-          )}
+     <button
+  onClick={handleClick}
+  className="mb-6 flex w-full items-center gap-3 rounded-lg text-left 
+             focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
+             group"
+  aria-expanded={isExpanded}
+>
+  {/* Icon */}
+  {Icon && (
+    <div
+      className={`flex h-10 w-10 items-center justify-center rounded-xl 
+                  ${getIconBgClass()} text-white`}
+      aria-hidden="true"
+    >
+      <Icon className="h-5 w-5" />
+    </div>
+  )}
 
-          <h2 className="text-xl font-bold sm:text-2xl group-hover:underline">
-            {title}
-          </h2>
+  {/* Title */}
+  <h2 className="text-xl font-bold text-gray-900 sm:text-2xl group-hover:underline">
+    {title}
+  </h2>
 
-          <span className="rounded-full bg-secondary px-3 py-1 text-sm font-medium">
-            {products.length} items
-          </span>
+  {/* Count badge */}
+  <span className="rounded-full bg-gray-900 px-3 py-1 text-sm font-medium text-white">
+    {products.length} items
+  </span>
 
-          <span className="ml-auto text-sm text-primary group-hover:underline">
-            {isExpanded ? "Show less ↑" : "View all →"}
-          </span>
-        </div>
+  {/* Action text */}
+  <span className="ml-auto text-sm font-medium text-blue-600 group-hover:text-blue-800">
+    {isExpanded ? "Show less ↑" : "View all →"}
+  </span>
+</button>
+
 
         {/* PRODUCTS */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">

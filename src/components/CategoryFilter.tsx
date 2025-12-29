@@ -14,22 +14,40 @@ const CategoryFilter = ({ selected, onSelect, availableCategories }: CategoryFil
   const allCategories: CategoryOption[] = ["All", ...availableCategories];
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {allCategories.map((category) => (
-        <Button
-          key={category}
-          variant={selected === category ? "default" : "outline"}
-          size="sm"
-          onClick={() => onSelect(category)}
-          className={cn(
-            "rounded-full transition-all",
-            selected === category && "shadow-md"
-          )}
-        >
-          {category}
-        </Button>
-      ))}
-    </div>
+    <div
+  className="flex flex-wrap gap-2"
+  role="group"
+  aria-label="Category filter"
+>
+  {allCategories.map((category) => {
+    const isSelected = selected === category;
+
+    return (
+      <Button
+        key={category}
+        variant={isSelected ? "default" : "outline"}
+        size="sm"
+        onClick={() => onSelect(category)}
+        aria-pressed={isSelected}
+        className={cn(
+          "rounded-full transition-all font-medium",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+
+          // Selected state (high contrast)
+          isSelected &&
+            "bg-blue-600 text-white shadow-md hover:bg-blue-700",
+
+          // Unselected state (still accessible)
+          !isSelected &&
+            "border-gray-300 text-gray-800 hover:bg-gray-100"
+        )}
+      >
+        {category}
+      </Button>
+    );
+  })}
+</div>
+
   );
 };
 

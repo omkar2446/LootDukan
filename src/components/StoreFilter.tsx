@@ -15,17 +15,21 @@ const StoreFilter = ({ selected, onSelect }: StoreFilterProps) => {
     <div className="flex flex-wrap gap-2">
       {stores.map((store) => (
         <button
-          key={store}
-          onClick={() => onSelect(store)}
-          className={cn(
-            "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
-            selected === store
-              ? "bg-primary text-primary-foreground shadow-md"
-              : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-          )}
-        >
-          {store}
-        </button>
+  key={store}
+  onClick={() => onSelect(store)}
+  aria-pressed={selected === store}
+  className={cn(
+    "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+
+    selected === store
+      ? "bg-blue-600 text-white shadow-md"
+      : "border border-gray-300 text-gray-800 hover:bg-gray-100"
+  )}
+>
+  {store}
+</button>
+
       ))}
     </div>
   );

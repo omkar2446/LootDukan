@@ -158,51 +158,92 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
         />
 
         {/* FILTER BAR */}
-        <div
-          className={`sticky top-16 z-40 bg-background/90 backdrop-blur transition-transform ${
-            hideFilterBar ? "-translate-y-full" : "translate-y-0"
-          }`}
-        >
-          <div className="container py-4 space-y-3">
-            <StoreFilter selected={storeFilter} onSelect={setStoreFilter} />
-            <CategoryFilter
-              selected={categoryFilter}
-              availableCategories={availableCategories}
-              onSelect={setCategoryFilter}
-            />
-            <DiscountFilter
-              selected={discountFilter}
-              onSelect={setDiscountFilter}
-            />
-            <SortSelect value={sortOption} onValueChange={setSortOption} />
-          </div>
-        </div>
+       
 
         <main className="flex-1">
           <HeroBanner />
+          <div
+  className={`sticky top-0 z-40 bg-white transition-all ${
+    hideFilterBar ? "-translate-y-full" : "translate-y-0"
+  }`}
+>
+  <div className="mx-auto max-w-7xl px-3 py-3">
+    <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-gray-50 p-3 shadow-sm">
+
+      {/* CATEGORY */}
+      <select
+        value={categoryFilter}
+        onChange={(e) => setCategoryFilter(e.target.value as CategoryOption)}
+        className="flex-1 min-w-[180px] rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 focus:border-blue-500 focus:outline-none"
+      >
+        <option value="All">All Categories</option>
+        {availableCategories.map((cat) => (
+          <option key={cat} value={cat}>
+            {cat}
+          </option>
+        ))}
+      </select>
+
+      {/* STORE */}
+      <select
+        value={storeFilter}
+        onChange={(e) => setStoreFilter(e.target.value as FilterOption)}
+        className="flex-1 min-w-[160px] rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 focus:border-blue-500 focus:outline-none"
+      >
+        <option value="All">All Stores</option>
+        <option value="Amazon">Amazon</option>
+        <option value="Flipkart">Flipkart</option>
+        <option value="messho">messho</option>
+      </select>
+
+      {/* SORT */}
+      <select
+        value={sortOption}
+        onChange={(e) => setSortOption(e.target.value as SortOption)}
+        className="flex-1 min-w-[140px] rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 focus:border-blue-500 focus:outline-none"
+      >
+        <option value="newest">Latest</option>
+        <option value="price-low">Price: Low → High</option>
+        <option value="price-high">Price: High → Low</option>
+      </select>
+
+      {/* RESET BUTTON */}
+      <button
+        onClick={() => {
+          setCategoryFilter("All");
+          setStoreFilter("All");
+          setSortOption("newest");
+        }}
+        className="ml-auto flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:bg-gray-100"
+        aria-label="Reset filters"
+      >
+        ⟳
+      </button>
+    </div>
+  </div>
+</div>
+
+          
 
           {loading ? (
             <div className="container py-20 text-center">
               Loading products...
             </div>
+            
+            
           ) : isFiltersActive ? (
             <section className="container py-8">
-              {/* SHOW ALL BUTTON */}
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setStoreFilter("All");
-                  setCategoryFilter("All");
-                  setDiscountFilter("All");
-                }}
-                className="mb-6 rounded-md bg-primary px-4 py-2 text-white"
-              >
-                ← Show All Products
-              </button>
+              
+              
+              
 
               <ProductGrid products={filteredAndSortedProducts} />
+              
             </section>
+            
+            
           ) : (
+            
             <>
               <ProductSection
                 title="🔥 80%+ OFF Zone"

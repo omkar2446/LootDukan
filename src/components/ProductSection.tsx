@@ -27,13 +27,7 @@ const ProductSection = ({
 
   const isExpanded = onTitleClick ? expanded : localExpanded;
 
-  const handleClick = () => {
-    if (onTitleClick) {
-      onTitleClick();
-    } else {
-      setLocalExpanded(prev => !prev);
-    }
-  };
+  
 
   const getBgClass = () => {
     if (variant === "hot")
@@ -54,7 +48,7 @@ const ProductSection = ({
       <div className="container">
         {/* HEADER */}
      <button
-  onClick={handleClick}
+ 
   className="mb-6 flex w-full items-center gap-3 rounded-lg text-left 
              focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
              group"

@@ -254,28 +254,28 @@ const Index = ({ isDark, onToggleTheme }: IndexProps) => {
                 title="🔥 80%+ OFF Zone"
                 icon={Flame}
                 products={hotDeals80}
-                onTitleClick={() => setDiscountFilter(80)}
+               
               />
 
               <ProductSection
                 title="⚡ 50%+ OFF Deals"
                 icon={Zap}
                 products={flashDeals50}
-                onTitleClick={() => setDiscountFilter(50)}
+               
               />
 
               <ProductSection
                 title="🎧 Headphones"
                 icon={Headphones}
                 products={headphonesProducts}
-                onTitleClick={() => setCategoryFilter("Headphones")}
+               
               />
 
               <ProductSection
                 title="👗 Dresses"
                 icon={ShirtIcon}
                 products={dressesProducts}
-                onTitleClick={() => setCategoryFilter("Dresses")}
+               
               />
 
               <ProductSection

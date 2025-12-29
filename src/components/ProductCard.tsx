@@ -104,13 +104,34 @@ const ProductCard = ({ product, index }: ProductCardProps) => {
         </h3>
 
         <div className="flex flex-col gap-1">
-  <p className="flex items-center gap-1 whitespace-nowrap text-lg font-bold text-primary">
-    {formatPrice(product.discountedPrice)}
+  <p
+    className="
+      flex items-center 
+      whitespace-nowrap 
+      text-lg font-bold 
+      text-primary 
+      leading-none
+      tabular-nums
+    "
+  >
+    <span className="mr-0.5">₹</span>
+    <span>{Number(product.discountedPrice).toLocaleString("en-IN")}</span>
   </p>
 
   {product.discountPercent > 0 && (
-    <p className="flex items-center gap-1 whitespace-nowrap text-sm text-muted-foreground line-through">
-      {formatPrice(product.originalPrice)}
+    <p
+      className="
+        flex items-center 
+        whitespace-nowrap 
+        text-sm 
+        text-muted-foreground 
+        line-through 
+        leading-none
+        tabular-nums
+      "
+    >
+      <span className="mr-0.5">₹</span>
+      <span>{Number(product.originalPrice).toLocaleString("en-IN")}</span>
     </p>
   )}
 </div>

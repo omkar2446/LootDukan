@@ -76,9 +76,7 @@ const ProductSection = ({
   </span>
 
   {/* Action text */}
-  <span className="ml-auto text-sm font-medium text-blue-600 group-hover:text-blue-800">
-    {isExpanded ? "Show less ↑" : "View all →"}
-  </span>
+  
 </button>
 
 

@@ -70,33 +70,30 @@ const ProductCard = ({ product, index }: ProductCardProps) => {
       </div>
 
       {/* Image */}
-<div className="relative aspect-square overflow-hidden rounded-lg bg-white min-h-[250px]">
- <img
-  src={product.imageUrl}
-  alt={product.name}
-  width={400}
-  height={400}
-  loading={index === 0 ? "eager" : "lazy"}
-  fetchPriority={index === 0 ? "high" : "auto"}
-  decoding="async"
-  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-  onError={(e) => {
-    const target = e.target as HTMLImageElement;
-    target.src =
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80";
-  }}
-/>
-
+      <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
+  <img
+    src={product.imageUrl}
+    alt={product.name}
+    width={400}
+    height={400}
+    loading="lazy"
+    decoding="async"
+    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+    onError={(e) => {
+      const target = e.target as HTMLImageElement;
+      target.src =
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80";
+    }}
+  />
 
   {/* Overlay for better contrast */}
   <div
-  className="absolute inset-0 
-             bg-gradient-to-t 
-             from-white/40 via-white/10 to-transparent 
-             opacity-0 group-hover:opacity-100
-             transition-opacity duration-300"
-/>
-
+    className="absolute inset-0 bg-gradient-to-t 
+               from-black/50 via-black/20 to-transparent 
+               opacity-0 group-hover:opacity-100 
+               transition-opacity duration-300"
+    aria-hidden="true"
+  />
 </div>
 
 

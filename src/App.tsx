@@ -17,7 +17,12 @@ import Contact from "./pages/Contact";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";  
 import Blog from "./pages/Blog";
-
+import { AuthProvider } from "@/hooks/useAuth";
+import Index2 from "./pages/Index2";
+import Auth from "./pages/Auth";
+import SellerDashboard from "./pages/SellerDashboard";
+import Chats from "./pages/Chats";
+import Chat from "./pages/Chat";
 
 const queryClient = new QueryClient();
 
@@ -42,36 +47,43 @@ const App = () => {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route
-                path="/"
-                element={<Index isDark={isDark} onToggleTheme={toggleTheme} />}
-              />
-              <Route
-                path="/admin-login"
-                element={<AdminLogin isDark={isDark} onToggleTheme={toggleTheme} />}
-              />
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute>
-                    <Admin isDark={isDark} onToggleTheme={toggleTheme} />
-                  </ProtectedRoute>
-                }
-                
-              />
-              <Route path="*" element={<NotFound />} />
-               <Route path="/home" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/blog" element={<Blog />} />
-            </Routes>
-          </BrowserRouter>
+          <AuthProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route
+                  path="/"
+                  element={<Index isDark={isDark} onToggleTheme={toggleTheme} />}
+                />
+                <Route
+                  path="/admin-login"
+                  element={<AdminLogin isDark={isDark} onToggleTheme={toggleTheme} />}
+                />
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute>
+                      <Admin isDark={isDark} onToggleTheme={toggleTheme} />
+                    </ProtectedRoute>
+                  }
+                  
+                />
+                <Route path="*" element={<NotFound />} />
+                 <Route path="/home" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/seller" element={<Index2 />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/seller/dashboard" element={<SellerDashboard />} />
+              <Route path="/chats" element={<Chats />} />
+              <Route path="/chat/:requestId" element={<Chat />} />
+              </Routes>
+            </BrowserRouter>
+          </AuthProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </HelmetProvider>

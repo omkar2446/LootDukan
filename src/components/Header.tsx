@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  Search,
-  Moon,
-  Sun,
-  Store,
-  MessageCircle,
-  LogOut,
   Menu,
   X,
+  Search,
+  Sun,
+  Moon,
+  Home,
+  MessageCircle,
+  Store,
+  LogOut,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,62 +18,41 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function Header({
   searchQuery = "",
-  onSearchChange = (query: string) => {},
+  onSearchChange = () => {},
   isDark = false,
   onToggleTheme = () => {},
 }) {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [open, setOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const isActive = (path) =>
-    location.pathname === path
-      ? "text-primary font-semibold"
-      : "text-muted-foreground hover:text-primary";
-
-  const isSeller = (p: any) => p?.role === "seller" || p?.is_seller;
-  const isBuyer = (p: any) => p?.role === "buyer" || p?.is_buyer;
-
-  const handleLogout = async () => {
-    await signOut();
-    navigate("/auth");
-  };
+  const isSeller = (p: any) => p?.role === "seller";
 
   return (
-    <header className="sticky top-0 z-50 bg-background/90 backdrop-blur border-b">
-      <div className="container flex items-center justify-between h-16">
+    <>
+      {/* HEADER */}
+      <header className="sticky top-0 z-50 bg-background border-b shadow-sm">
+        <div className="container flex items-center h-16 gap-3">
 
-        {/* LOGO */}
-        <Link to="/" className="flex items-center gap-2">
-  <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-white">
-    <img
-      src="/afavicon.ico"
-      alt="LootDukan Logo"
-      className="w-full h-full object-contain"
-    />
-  </div>
-  <span className="font-bold text-lg">
-    Loot<span className="text-primary">Dukan</span>
-  </span>
-</Link>
+          {/* MENU ICON */}
+          <button
+            className="md:hidden"
+            onClick={() => setOpen(true)}
+          >
+            <Menu />
+          </button>
 
-
-        {/* NAV LINKS */}
-        <div className="hidden md:flex items-center gap-6">
-          <Link to="/" className={isActive("/")}>
-            Home
+          {/* LOGO */}
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/afavicon.ico" className="w-9 h-9" />
+            <span className="font-bold text-lg hidden sm:block">
+              Loot<span className="text-primary">Dukan</span>
+            </span>
           </Link>
 
-          <Link to="/seller" className={isActive("/seller")}>
-            Direct with Seller
-          </Link>
-        </div>
-
-        {/* SEARCH BAR */}
-        {(location.pathname === "/" || location.pathname === "/seller")&& (
-          <div className="hidden md:flex relative w-[300px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          {/* SEARCH BAR (ALWAYS VISIBLE) */}
+          <div className="flex-1 relative mx-3">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Search products..."
               value={searchQuery}
@@ -79,104 +60,99 @@ export default function Header({
               className="pl-9"
             />
           </div>
-        )}
 
-        {/* ACTION BUTTONS */}
-        <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={onToggleTheme}>
-            {isDark ? <Sun /> : <Moon />}
-          </Button>
-
-          {user && isSeller(profile) && (
-            <Button
-              variant="outline"
-              onClick={() => navigate("/seller/dashboard")}
-            >
-              <Store className="w-4 h-4 mr-2" />
-              Seller Panel
+          {/* RIGHT */}
+          <div className="hidden md:flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={onToggleTheme}>
+              {isDark ? <Sun /> : <Moon />}
             </Button>
-          )}
 
-          {user && (
-            <Button
-              variant="outline"
-              onClick={() => navigate("/chats")}
-            >
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Chats
-            </Button>
-          )}
-
-          {!user ? (
-            <>
-              <Button variant="ghost" onClick={() => navigate("/auth")}>
+            {!user ? (
+              <Button onClick={() => navigate("/auth")}>
                 Login
               </Button>
-              <Button onClick={() => navigate("/auth")}>
-                Get Started
+            ) : (
+              <Button variant="destructive" onClick={signOut}>
+                Logout
               </Button>
-            </>
-          ) : (
-            <Button variant="destructive" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          )}
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* OVERLAY */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40"
+          onClick={() => setOpen(false)}
+        />
+      )}
+
+      {/* SIDEBAR */}
+      <aside
+        className={`fixed top-0 left-0 h-full w-[280px] bg-background z-50
+        transform transition-transform duration-300
+        ${open ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        <div className="flex items-center justify-between p-4 border-b">
+          <span className="font-bold">LootDukan</span>
+          <button onClick={() => setOpen(false)}>
+            <X />
+          </button>
         </div>
 
-        {/* MOBILE MENU BUTTON */}
-        <button
-          className="md:hidden"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          {mobileOpen ? <X /> : <Menu />}
-        </button>
-      </div>
-
-      {/* MOBILE MENU */}
-      {mobileOpen && (
-        <div className="md:hidden border-t bg-background p-4 space-y-3">
-          <Link
-            to="/"
-            className={isActive("/")}
-            onClick={() => setMobileOpen(false)}
-          >
-            Home
-          </Link>
-
-          <Link
-            to="/seller"
-            className={isActive("/seller")}
-            onClick={() => setMobileOpen(false)}
-          >
-            Direct with Seller
-          </Link>
+        <div className="p-4 space-y-2">
+          <SidebarItem icon={<Home />} text="Home" link="/" />
+          <SidebarItem icon={<MessageCircle />} text="Chats" link="/chats" />
+          <SidebarItem icon={<Store />} text="Direct with Seller" link="/seller" />
 
           {isSeller(profile) && (
-            <Link
-              to="/seller/dashboard"
-              className="block text-primary"
-              onClick={() => setMobileOpen(false)}
-            >
-              Seller Dashboard
-            </Link>
+            <SidebarItem
+              icon={<User />}
+              text="Seller Dashboard"
+              link="/seller/dashboard"
+            />
           )}
 
-          {!user ? (
-            <Button className="w-full" onClick={() => navigate("/auth")}>
-              Login
-            </Button>
-          ) : (
-            <Button
-              variant="destructive"
-              className="w-full"
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
-          )}
+          <div className="pt-4 border-t">
+            {!user ? (
+              <Button className="w-full" onClick={() => navigate("/auth")}>
+                Login
+              </Button>
+            ) : (
+              <Button
+                className="w-full"
+                variant="destructive"
+                onClick={signOut}
+              >
+                Logout
+              </Button>
+            )}
+          </div>
         </div>
-      )}
-    </header>
+      </aside>
+    </>
+  );
+}
+
+/* SIDEBAR ITEM */
+function SidebarItem({ icon, text, link }: any) {
+  const location = useLocation();
+  const isActive = location.pathname === link;
+
+  return (
+    <Link
+      to={link}
+      className={`flex items-center gap-3 p-2 rounded-md transition
+        ${
+          isActive
+            ? "bg-primary/10 text-primary font-semibold"
+            : "hover:bg-muted text-muted-foreground"
+        }
+      `}
+    >
+      <span>{icon}</span>
+      <span>{text}</span>
+    </Link>
   );
 }

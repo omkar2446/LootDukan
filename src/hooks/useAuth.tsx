@@ -42,16 +42,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // ✅ Fetch profile
   const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
+  const { data } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .single();
 
-    if (!error && data) {
-      setProfile(data as Profile);
-    }
-  };
+  setProfile(data);
+};
+
 
   const refreshProfile = async () => {
     if (user?.id) {
@@ -92,25 +91,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // ✅ SIGN UP
-  const signUp = async (
-    email: string,
-    password: string,
-    fullName: string,
-    role: "buyer" | "seller"
-  ) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-          role,
-        },
-      },
+ const signUp = async (
+  email: string,
+  password: string,
+  fullName: string,
+  role: "buyer" | "seller"
+) => {
+  // Step 1: Create user
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+  if (error) return { error };
+
+  // Step 2: Insert profile manually
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .insert({
+      id: data.user?.id,
+      full_name: fullName,
+      role: role,
     });
 
-    return { error };
-  };
+  if (profileError) {
+    console.error("Profile error:", profileError.message);
+    return { error: profileError };
+  }
+
+  return { error: null };
+};
+
 
   // ✅ SIGN IN
   const signIn = async (email: string, password: string) => {

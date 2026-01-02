@@ -23,6 +23,7 @@ import Auth from "./pages/Auth";
 import SellerDashboard from "./pages/SellerDashboard";
 import Chats from "./pages/Chats";
 import Chat from "./pages/Chat";
+import SellerChatRequests from "@/pages/seller/SellerChatRequests";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +82,8 @@ const App = () => {
               <Route path="/seller/dashboard" element={<SellerDashboard />} />
               <Route path="/chats" element={<Chats />} />
               <Route path="/chat/:requestId" element={<Chat />} />
+              <Route path="/seller/requests" element={<SellerChatRequests />} />
+
               </Routes>
             </BrowserRouter>
           </AuthProvider>

@@ -6,7 +6,11 @@ import {
   MessageCircle,
   Search,
   LogOut,
+  Menu,
+  X,
 } from "lucide-react";
+import { useState } from "react";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,83 +22,140 @@ export default function Header({
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [open, setOpen] = useState(false);
 
-  const isSeller = (p: any) => p?.role === "seller";
+  const isSeller = profile?.role === "seller";
+
+  // ✅ Show search only on these pages
+  const showSearch =
+    location.pathname === "/" || location.pathname === "/seller";
 
   const navItem = (path: string) =>
-    `flex items-center gap-1 px-2 py-1 text-sm rounded-md transition
-     ${
-       location.pathname === path
-         ? "text-primary font-semibold"
-         : "text-muted-foreground hover:text-primary"
-     }`;
+    `flex items-center gap-2 px-3 py-2 rounded-md text-sm transition ${
+      location.pathname === path
+        ? "text-primary font-semibold"
+        : "text-muted-foreground hover:text-primary"
+    }`;
 
   return (
-    <header className="w-full bg-background border-b">
-      <div className="max-w-7xl mx-auto h-16 px-4 flex items-center">
+    <header className="w-full bg-background border-b sticky top-0 z-50">
 
-        {/* LEFT: LOGO + SEARCH */}
-        <div className="flex items-center gap-4 flex-1">
+      {/* ================= HEADER ROW ================= */}
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
 
-          {/* LOGO */}
-          <Link to="/" className="flex items-center gap-2 shrink-0">
-            <img src="/afavicon.ico" className="w-9 h-9" />
-            <span className="hidden md:block font-bold text-lg">
-              Loot<span className="text-primary">Dukan</span>
-            </span>
+        {/* LOGO */}
+        <Link to="/" className="flex items-center gap-2">
+          <img src="/afavicon.ico" className="w-8 h-8" />
+          <span className="font-bold text-lg hidden sm:block">
+         Loot<span className="text-primary">Dukan</span>
+          </span>
+        </Link>
+
+        {/* 🔍 SEARCH (DESKTOP – LIKE LINKEDIN) */}
+        {showSearch && (
+          <div className="hidden md:block w-[380px]">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="🔍 Search products..."
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* DESKTOP MENU */}
+        <div className="hidden md:flex items-center gap-3">
+          <Link to="/" className={navItem("/")}>🏠 Home</Link>
+          <Link to="/seller" className={navItem("/seller")}>🏪 Seller</Link>
+
+          {isSeller && (
+            <Link to="/seller/requests" className={navItem("/seller/requests")}>
+              📥 Requests
+            </Link>
+          )}
+
+          {isSeller && (
+            <Link to="/seller/dashboard" className={navItem("/seller/dashboard")}>
+              📊 Dashboard
+            </Link>
+          )}
+
+          <Link to="/chats" className={navItem("/chats")}>
+            💬 Chat
           </Link>
 
-          {/* SEARCH */}
-          <div className="relative w-full max-w-[420px]">
+          {!user ? (
+            <Button size="sm" onClick={() => navigate("/auth")}>
+              🔐 Login
+            </Button>
+          ) : (
+            <Button size="sm" variant="destructive" onClick={signOut}>
+              🚪 Logout
+            </Button>
+          )}
+        </div>
+
+        {/* MOBILE MENU ICON */}
+        <button className="md:hidden" onClick={() => setOpen(!open)}>
+          {open ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* 🔍 MOBILE SEARCH (LinkedIn Style) */}
+      {showSearch && (
+        <div className="md:hidden px-4 pb-3">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Search products..."
+              placeholder="🔍 Search products..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               className="pl-9"
             />
           </div>
         </div>
+      )}
 
-        {/* RIGHT: NAVIGATION */}
-        <div className="flex items-center gap-3 shrink-0">
-
-          <Link to="/" className={navItem("/")}>
-            <Home size={18} />
-            <span className="hidden md:inline">Home</span>
+      {/* 📱 MOBILE MENU */}
+      {open && (
+        <div className="md:hidden border-t bg-background px-4 py-3 space-y-2">
+          <Link to="/" onClick={() => setOpen(false)} className={navItem("/")}>
+            🏠 Home
+          </Link>
+          <Link to="/seller" onClick={() => setOpen(false)} className={navItem("/seller")}>
+            🏪 Seller
           </Link>
 
-          <Link to="/seller" className={navItem("/seller")}>
-            <Store size={18} />
-            <span className="hidden md:inline">Seller</span>
-          </Link>
-
-          {isSeller(profile) && (
-            <Link
-              to="/seller/dashboard"
-              className={navItem("/seller/dashboard")}
-            >
-              <LayoutDashboard size={18} />
-              <span className="hidden md:inline">Dashboard</span>
+          {isSeller && (
+            <Link to="/seller/requests" onClick={() => setOpen(false)} className={navItem("/seller/requests")}>
+              📥 Requests
             </Link>
           )}
 
-          <Link to="/chats" className={navItem("/chats")}>
-            <MessageCircle size={18} />
-            <span className="hidden md:inline">Chat</span>
+          {isSeller && (
+            <Link to="/seller/dashboard" onClick={() => setOpen(false)} className={navItem("/seller/dashboard")}>
+              📊 Dashboard
+            </Link>
+          )}
+
+          <Link to="/chats" onClick={() => setOpen(false)} className={navItem("/chats")}>
+            💬 Chat
           </Link>
 
           {!user ? (
-            <Button size="sm" onClick={() => navigate("/auth")}>
-              Login
+            <Button className="w-full" onClick={() => navigate("/auth")}>
+              🔐 Login
             </Button>
           ) : (
-            <Button size="sm" variant="destructive" onClick={signOut}>
-              <LogOut size={16} />
+            <Button className="w-full" variant="destructive" onClick={signOut}>
+              🚪 Logout
             </Button>
           )}
         </div>
-      </div>
+      )}
     </header>
   );
 }

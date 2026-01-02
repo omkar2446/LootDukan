@@ -40,6 +40,7 @@ export default function SellerDashboard() {
     setProducts(data || []);
   };
 
+  // ------------------ IMAGE UPLOAD ------------------
   const uploadImage = async (file: File) => {
     const fileName = `${user?.id}/${Date.now()}-${file.name}`;
     const { error } = await supabase.storage
@@ -53,8 +54,9 @@ export default function SellerDashboard() {
       .getPublicUrl(fileName).data.publicUrl;
   };
 
+  // ------------------ ADD PRODUCT ------------------
   const addProductToDB = async () => {
-    const urls: any[] = [];
+    const urls: string[] = [];
 
     for (const img of images) {
       const url = await uploadImage(img);
@@ -78,7 +80,7 @@ export default function SellerDashboard() {
     fetchProducts();
   };
 
-  // ✅ DELETE PRODUCT
+  // ------------------ DELETE PRODUCT ------------------
   const deleteProduct = async (product: any) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this product?"
@@ -96,16 +98,60 @@ export default function SellerDashboard() {
           .remove(images);
       }
 
-      await supabase
-        .from("products")
-        .delete()
-        .eq("id", product.id);
+      await supabase.from("products").delete().eq("id", product.id);
 
       toast({ title: "Product deleted successfully 🗑️" });
       fetchProducts();
     } catch (err) {
-      toast({ title: "Delete failed", variant: "destructive" });
+      toast({
+        title: "Failed to delete product",
+        variant: "destructive",
+      });
     }
+  };
+
+  // ------------------ PAYMENT ------------------
+  const handleAddProduct = async () => {
+    if (!productName || !originalPrice || !discountPrice) {
+      toast({ title: "Fill all fields", variant: "destructive" });
+      return;
+    }
+
+    const RAZORPAY_KEY = String(import.meta.env.VITE_RAZORPAY_KEY_ID || "");
+    if (!RAZORPAY_KEY) {
+      toast({
+        title: "Razorpay key missing",
+        description: "Add VITE_RAZORPAY_KEY_ID",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const options = {
+      key: RAZORPAY_KEY,
+      amount: 5000,
+      currency: "INR",
+      name: "LootDukan",
+      description: "Product Listing Fee",
+      handler: async () => {
+        await addProductToDB();
+      },
+      theme: { color: "#0f172a" },
+    };
+
+    const loadRazorpay = () =>
+      new Promise((resolve, reject) => {
+        if ((window as any).Razorpay) return resolve(true);
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.onload = () => resolve(true);
+        script.onerror = () => reject(false);
+        document.body.appendChild(script);
+      });
+
+    await loadRazorpay();
+    const rzp = new (window as any).Razorpay(options);
+    rzp.open();
   };
 
   return (
@@ -116,7 +162,8 @@ export default function SellerDashboard() {
         <div className="flex justify-between mb-6">
           <h1 className="text-2xl font-bold">Seller Dashboard</h1>
           <Button onClick={() => setOpen(true)}>
-            <Plus className="w-4 h-4 mr-1" /> Add Product
+            <Plus className="w-4 h-4 mr-1" />
+            Add Product
           </Button>
         </div>
 
@@ -140,7 +187,7 @@ export default function SellerDashboard() {
                 <Button
                   variant="destructive"
                   size="sm"
-                  className="w-full mt-2"
+                  className="w-full"
                   onClick={() => deleteProduct(p)}
                 >
                   Delete Product
@@ -191,8 +238,8 @@ export default function SellerDashboard() {
                 }
               />
 
-              <Button className="w-full mt-4" onClick={addProductToDB}>
-                Add Product
+              <Button className="w-full mt-4" onClick={handleAddProduct}>
+                Pay ₹50 & Add Product
               </Button>
 
               <Button

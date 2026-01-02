@@ -271,10 +271,7 @@ export default function Index({ isDark = false, onToggleTheme = () => {} }: { is
           </div>
         </div>
 
-        <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Lootdukan. All rights reserved.</p>
-         
-        </div>
+      
       </div>
   
 

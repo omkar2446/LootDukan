@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MessageCircle, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from "@/integrations/supabase/client";
 
 interface Product {
   id: string;
@@ -47,15 +48,42 @@ export default function ProductCard({ product, onChatRequest }: ProductCardProps
     }
   };
 
-  const handleChatRequest = () => {
-    if (!user) {
-      navigate('/auth');
+  const handleChatRequest = async () => {
+  if (!user) {
+    navigate("/auth");
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("chat_requests")
+      .upsert(
+        {
+          buyer_id: user.id,
+          seller_id: product.seller_id,
+          product_id: product.id, // ✅ REQUIRED
+          status: "pending",
+        },
+        {
+          onConflict: "buyer_id,seller_id,product_id",
+        }
+      )
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Chat error:", error);
+      alert("Unable to start chat");
       return;
     }
-    if (onChatRequest) {
-      onChatRequest(product.id, product.seller_id);
-    }
-  };
+
+    navigate(`/chat/${data.id}`);
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+};
+
 
   return (
     <div className="group bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">

@@ -3,22 +3,20 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Upload, X, Loader2 } from "lucide-react";
+import { Plus } from "lucide-react";
 
 export default function SellerDashboard() {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
   const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
   const [productName, setProductName] = useState("");
@@ -26,7 +24,6 @@ export default function SellerDashboard() {
   const [originalPrice, setOriginalPrice] = useState("");
   const [discountPrice, setDiscountPrice] = useState("");
   const [images, setImages] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
 
   useEffect(() => {
     if (!user) navigate("/");
@@ -61,7 +58,7 @@ export default function SellerDashboard() {
 
     for (const img of images) {
       const url = await uploadImage(img);
-      urls.push(url);
+      if (url) urls.push(url);
     }
 
     await supabase.from("products").insert({
@@ -81,59 +78,33 @@ export default function SellerDashboard() {
     fetchProducts();
   };
 
-  // ✅ RAZORPAY PAYMENT
-  const handleAddProduct = async () => {
-    if (!productName || !originalPrice || !discountPrice) {
-      toast({ title: "Fill all fields", variant: "destructive" });
-      return;
-    }
-
-      const RAZORPAY_KEY = String(import.meta.env.VITE_RAZORPAY_KEY_ID || "");
-
-    if (!RAZORPAY_KEY) {
-      toast({ title: 'Razorpay key missing', description: 'Contact admin or set VITE_RAZORPAY_KEY_ID in .env', variant: 'destructive' });
-      return;
-    }
-
-    const options = {
-      key: RAZORPAY_KEY,
-      amount: 5000,
-      currency: "INR",
-      name: "LootDukan",
-      description: "Product Listing Fee",
-      handler: async () => {
-        await addProductToDB();
-      },
-      theme: {
-        color: "#0f172a",
-      },
-    };
-
-    // Ensure Razorpay script is loaded and available on window
-    function ensureRazorpayLoaded(): Promise<void> {
-      return new Promise((resolve, reject) => {
-        if ((window as any).Razorpay) return resolve();
-        const script = document.querySelector('script[src*="checkout.razorpay.com"]') as HTMLScriptElement | null;
-        if (script) {
-          script.addEventListener('load', () => resolve());
-          script.addEventListener('error', () => reject(new Error('Failed to load Razorpay script')));
-        } else {
-          const s = document.createElement('script');
-          s.src = 'https://checkout.razorpay.com/v1/checkout.js';
-          s.onload = () => resolve();
-          s.onerror = () => reject(new Error('Failed to load Razorpay script'));
-          document.head.appendChild(s);
-        }
-      });
-    }
+  // ✅ DELETE PRODUCT
+  const deleteProduct = async (product: any) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+    if (!confirmDelete) return;
 
     try {
-      await ensureRazorpayLoaded();
-      const rzp = new (window as any).Razorpay(options);
-      rzp.open();
-    } catch (e: any) {
-      console.error('Razorpay load/open error', e);
-      toast({ title: 'Payment init failed', description: e.message || String(e), variant: 'destructive' });
+      const images = [product.image1, product.image2, product.image3]
+        .filter(Boolean)
+        .map((url: string) => url.split("/product-images/")[1]);
+
+      if (images.length > 0) {
+        await supabase.storage
+          .from("product-images")
+          .remove(images);
+      }
+
+      await supabase
+        .from("products")
+        .delete()
+        .eq("id", product.id);
+
+      toast({ title: "Product deleted successfully 🗑️" });
+      fetchProducts();
+    } catch (err) {
+      toast({ title: "Delete failed", variant: "destructive" });
     }
   };
 
@@ -145,11 +116,11 @@ export default function SellerDashboard() {
         <div className="flex justify-between mb-6">
           <h1 className="text-2xl font-bold">Seller Dashboard</h1>
           <Button onClick={() => setOpen(true)}>
-            <Plus className="w-4 h-4" /> Add Product
+            <Plus className="w-4 h-4 mr-1" /> Add Product
           </Button>
         </div>
 
-        {/* Product List */}
+        {/* PRODUCTS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {products.map((p) => (
             <Card key={p.id}>
@@ -157,12 +128,23 @@ export default function SellerDashboard() {
                 src={p.image1}
                 className="w-full h-40 object-cover"
               />
-              <CardContent>
+
+              <CardContent className="space-y-2">
                 <h3 className="font-semibold">{p.product_name}</h3>
                 <p className="text-sm text-muted-foreground">
                   ₹{p.discount_price}
                 </p>
-                <Badge className="mt-2">{p.status}</Badge>
+
+                <Badge>{p.status}</Badge>
+
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="w-full mt-2"
+                  onClick={() => deleteProduct(p)}
+                >
+                  Delete Product
+                </Button>
               </CardContent>
             </Card>
           ))}
@@ -203,14 +185,14 @@ export default function SellerDashboard() {
               <input
                 type="file"
                 multiple
+                className="mt-3"
                 onChange={(e) =>
                   setImages(Array.from(e.target.files || []))
                 }
-                className="mt-3"
               />
 
-              <Button className="w-full mt-4" onClick={handleAddProduct}>
-                Pay ₹50 & Add Product
+              <Button className="w-full mt-4" onClick={addProductToDB}>
+                Add Product
               </Button>
 
               <Button

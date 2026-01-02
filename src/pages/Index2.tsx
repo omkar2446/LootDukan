@@ -185,33 +185,7 @@ export default function Index({ isDark = false, onToggleTheme = () => {} }: { is
         </div>
       </section>
 
-      {/* CTA Section */}
-      {!user && (
-        <section className="py-14 bg-gradient-to-r from-indigo-600 to-cyan-600">
-  <div className="container text-center px-4">
-    
-    <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
-      Ready to Start Selling?
-    </h2>
-
-    <p className="text-white/80 text-base md:text-lg mb-6 max-w-xl mx-auto">
-      Join thousands of sellers and reach buyers across India.  
-      List your products for just <span className="font-semibold">₹50</span>.
-    </p>
-
-    <Button
-      size="lg"
-      className="bg-white text-indigo-600 hover:bg-white/90 font-semibold px-7 py-5 rounded-full shadow-md"
-      onClick={() => navigate('/auth')}
-    >
-      Become a Seller
-      <ArrowRight className="w-4 h-4 ml-2" />
-    </Button>
-
-  </div>
-</section>
-
-      )}
+     
 
       {/* Footer */}
       <footer className="py-8 border-t border-border">
